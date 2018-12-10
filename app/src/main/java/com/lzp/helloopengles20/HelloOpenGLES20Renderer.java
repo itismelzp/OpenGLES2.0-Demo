@@ -27,16 +27,20 @@ public class HelloOpenGLES20Renderer implements GLSurfaceView.Renderer {
     private float[] mProjMatrix = new float[16];
 
     private final String vertexShaderCode =
+            // This matrix member variable provides a hook to manipulate
+            // the coordinates of the objects that use this vertex shader
+            "uniform mat4 uMVPMatrix;  \n" +
             "attribute vec4 vPosition; \n" +
-                    "void main(){              \n" +
-                    " gl_Position = vPosition; \n" +
-                    "}                         \n";
+            "void main(){              \n" +
+            // the matrix must be included as a modifier of gl_Position
+            " gl_Position = uMVPMatrix * vPosition; \n" +
+            "}                         \n";
 
     private final String fragmentShaderCode =
             "precision mediump float;  \n" +
-                    "void main(){              \n" +
-                    " gl_FragColor = vec4 (0.63671875, 0.76953125, 0.22265625, 1.0); \n" +
-                    "}                         \n";
+            "void main(){              \n" +
+            " gl_FragColor = vec4 (0.63671875, 0.76953125, 0.22265625, 1.0); \n" +
+            "}                         \n";
 
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 
