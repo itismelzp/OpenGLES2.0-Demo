@@ -14,6 +14,8 @@ import android.os.SystemClock;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HelloOpenGLES20Renderer implements GLSurfaceView.Renderer {
 
@@ -28,6 +30,9 @@ public class HelloOpenGLES20Renderer implements GLSurfaceView.Renderer {
     private float[] mProjMatrix = new float[16];
 
     public float mAngle;
+    private int n = 100;
+    private float radius = 0.5f;
+    private float coords[];
 
     private final String vertexShaderCode =
             // This matrix member variable provides a hook to manipulate
@@ -88,7 +93,8 @@ public class HelloOpenGLES20Renderer implements GLSurfaceView.Renderer {
         // Apply a ModelView Projection transformation
         GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false, mMVPMatrix, 0);
         // Draw the triangle
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3);
+//        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, coords.length/3);
     }
 
     public void onSurfaceChanged(GL10 unused, int width, int height) {
@@ -107,22 +113,35 @@ public class HelloOpenGLES20Renderer implements GLSurfaceView.Renderer {
 
     private void initShapes() {
 
-        float triangleCoords[] = {
-                // X, Y, Z
-                -0.5f, -0.25f, 0,
-                0.5f, -0.25f, 0,
-                0.0f, 0.559016994f, 0
-        };
+        coords = createPositions();
 
         // initialize vertex Buffer for triangle
         ByteBuffer vbb = ByteBuffer.allocateDirect(
                 // (# of coordinate values * 4 bytes per float)
-                triangleCoords.length * 4);
+                coords.length * 4);
         vbb.order(ByteOrder.nativeOrder());// use the device hardware's native byte order
         triangleVB = vbb.asFloatBuffer();  // create a floating point buffer from the ByteBuffer
-        triangleVB.put(triangleCoords);    // add the coordinates to the FloatBuffer
+        triangleVB.put(coords);    // add the coordinates to the FloatBuffer
         triangleVB.position(0);            // set the buffer to read the first coordinate
 
+    }
+
+    private float[] createPositions() {
+        List<Float> data = new ArrayList<>();
+        data.add(0.0f);             //设置圆心坐标
+        data.add(0.0f);
+        data.add(0.0f);
+        float angDegSpan = 360.f / n;
+        for (float i = 0; i < 360 + angDegSpan; i += angDegSpan) {
+            data.add((float) (radius * Math.sin(i * Math.PI / 180f)));
+            data.add((float) (radius * Math.cos(i * Math.PI / 180f)));
+            data.add(0.0f);
+        }
+        float[] f = new float[data.size()];
+        for (int i = 0; i < f.length; i++) {
+            f[i] = data.get(i);
+        }
+        return f;
     }
 
     private int loadShader(int type, String shaderCode) {
