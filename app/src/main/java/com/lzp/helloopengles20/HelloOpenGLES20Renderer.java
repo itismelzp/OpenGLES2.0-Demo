@@ -27,6 +27,8 @@ public class HelloOpenGLES20Renderer implements GLSurfaceView.Renderer {
     private float[] mVMatrix = new float[16];
     private float[] mProjMatrix = new float[16];
 
+    public float mAngle;
+
     private final String vertexShaderCode =
             // This matrix member variable provides a hook to manipulate
             // the coordinates of the objects that use this vertex shader
@@ -76,9 +78,10 @@ public class HelloOpenGLES20Renderer implements GLSurfaceView.Renderer {
         GLES20.glEnableVertexAttribArray(maPositionHandle);
 
         // Create a rotation for the triangle
-        long time = SystemClock.uptimeMillis() % 4000L;
-        float angle = 0.090f * ((int) time);
-        Matrix.setRotateM(mMMatrix, 0, angle, 0, 0, 1.0f);
+//        long time = SystemClock.uptimeMillis() % 4000L;
+//        float angle = 0.090f * ((int) time);
+        // Use the mAngle member as the rotation value
+        Matrix.setRotateM(mMMatrix, 0, mAngle, 0, 0, 1.0f);
         Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, mMMatrix, 0);
         Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
 
